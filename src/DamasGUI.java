@@ -7,6 +7,9 @@ import pt.iscte.guitoo.board.Board;
 public class DamasGUI {
 	Board board;
 	DamasLogic logic;
+	int count = 0;
+	int initialLine = 0;
+	int initialCol = 0;
 
 	DamasGUI() {
 		logic = new DamasLogic(6,3);
@@ -41,12 +44,20 @@ public class DamasGUI {
 	}
 	
 	void click(int line, int col) {
-		int index = line * logic.getLength() + col;
-		System.out.println(logic.getPos()[line*logic.getLength()+col].piece());
-		System.out.println(logic.getPos()[line * logic.getLength() + col].validPlay(4, 3));
+		if(count == 0) {
+			initialLine = line;
+			initialCol = col;
+			count = 1;
+		}
+		if(count == 1) {
+			logic.moveTo(initialLine, initialCol, line, col);
+			count =0;
+			System.out.println(Arrays.toString(logic.getPos()));
+		}
 	}
+	
 	void random(){
-		logic.randomPlay();
+		//logic.randomPlay();
 	}
 	void newGame() {
 		DamasGUI gui = new DamasGUI();

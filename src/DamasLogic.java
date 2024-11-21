@@ -89,18 +89,32 @@ public class DamasLogic {
 		return (numberOfWhite==0 && numberOfBlack == 0)? true:false;
 	}
 	
-		
-		
-	
-	
-	void moveTo(Position p,int line, int col) {
-		if(pos[line*length + length].validPlay(line,col))
-			pos[line*length + length] = p;
+	boolean validPlay(int initialLine,int initialCol, int finalLine, int finalCol){
+		if(finalLine == initialLine -1 && initialCol == finalCol -1)
+			return true;
+		else if(initialLine == finalCol && initialCol == finalLine) {
+			return true;
+		}
+		else
+			return false;
 	}
 	
-	void randomPlay(){
-		if(isWhiteTurn) {
+	void moveTo(int initialLine, int initialCol, int finalLine, int finalCol) {
+		if(validPlay(initialLine,initialCol,finalLine,finalCol)) {
+			matrix[finalLine][finalCol] = matrix[initialLine][initialCol];
+			matrix[initialLine][initialCol] = 0;
+		}
 			
+	}
+	
+	/*void randomPlay(){
+		if(isWhiteTurn) {
+			for(int i = 0;i<matrix.length;i++) {
+				for(int c = 0;c<matrix[i].length;c++) {
+					if(matrix[i][c] == 2)
+						moveTo()
+				}
+			}
 			
 			
 		}
@@ -109,7 +123,7 @@ public class DamasLogic {
 		}
 			
 			
-	}
+	}*/
 	
 	
 	
