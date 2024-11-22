@@ -8,8 +8,8 @@ public class DamasGUI {
 	Board board;
 	DamasLogic logic;
 	int count = 0;
-	int initialLine = 0;
-	int initialCol = 0;
+	int initialLine = -1;
+	int initialCol = -1;
 
 	DamasGUI() {
 		logic = new DamasLogic(6,3);
@@ -26,6 +26,9 @@ public class DamasGUI {
 	}
 	Color background(int line, int col) {
 		
+		if((line == initialLine && col == initialCol) && (logic.getPos()[line*logic.getLength() + col].piece() != null))
+			return StandardColor.YELLOW;
+		
 		if(line % 2 == 0){
 			return col%2 != 0 ? StandardColor.GRAY: StandardColor.WHITE;
 		}
@@ -33,6 +36,7 @@ public class DamasGUI {
 			return col%2 == 0 ? StandardColor.GRAY : StandardColor.WHITE;
 		
 	}
+	
 	String icon(int line, int col) {
 		int[][] mat = logic.getMatrix();
 		
@@ -44,16 +48,19 @@ public class DamasGUI {
 	}
 	
 	void click(int line, int col) {
+		if(count == 1) {
+			logic.moveTo(initialLine, initialCol, line, col);
+			count =0;
+			
+			initialLine = -1;
+			initialCol = -1;
+		}
 		if(count == 0) {
 			initialLine = line;
 			initialCol = col;
 			count = 1;
 		}
-		if(count == 1) {
-			logic.moveTo(initialLine, initialCol, line, col);
-			count =0;
-			System.out.println(Arrays.toString(logic.getPos()));
-		}
+		
 	}
 	
 	void random(){

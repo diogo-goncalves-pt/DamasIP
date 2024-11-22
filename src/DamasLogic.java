@@ -90,21 +90,29 @@ public class DamasLogic {
 	}
 	
 	boolean validPlay(int initialLine,int initialCol, int finalLine, int finalCol){
-		if(finalLine == initialLine -1 && initialCol == finalCol -1)
-			return true;
-		else if(initialLine == finalCol && initialCol == finalLine) {
-			return true;
+		if((pos[initialLine * length + initialCol].piece() !=  null) && (pos[finalLine * length + finalCol].piece() ==  null)) {
+			if(finalLine == initialLine -1 && finalCol == initialCol -1)
+				return true;
+			else if(initialLine == finalCol && initialCol == finalLine) {
+				return true;
+			}
 		}
-		else
-			return false;
+		return false;
 	}
 	
 	void moveTo(int initialLine, int initialCol, int finalLine, int finalCol) {
 		if(validPlay(initialLine,initialCol,finalLine,finalCol)) {
-			matrix[finalLine][finalCol] = matrix[initialLine][initialCol];
-			matrix[initialLine][initialCol] = 0;
+			if(finalLine == initialLine -1 && finalCol == initialCol -1) {
+				matrix[finalLine][finalCol] = matrix[initialLine][initialCol];
+				matrix[initialLine][initialCol] = 0;
+			}
+			if(finalLine == initialCol && finalCol == initialLine) {
+				matrix[finalLine][finalCol] = matrix[initialLine][initialCol];
+				matrix[initialLine][initialCol] = 0;
+			}
+			isWhiteTurn = ! isWhiteTurn;
 		}
-			
+
 	}
 	
 	/*void randomPlay(){
