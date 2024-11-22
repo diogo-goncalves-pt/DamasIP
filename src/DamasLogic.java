@@ -111,8 +111,21 @@ public class DamasLogic {
 		int randomInitialCol = (int)Math.random()*length;
 		int randomFinalLine = (int)Math.random()*length;
 		int randomFinalCol = (int)Math.random()*length;
-						
-		moveTo(randomInitialLine, randomInitialCol, randomFinalLine, randomFinalCol);
+		while (true) {
+			if(isWhiteTurn) {
+				
+			}
+			if(validPlay(randomInitialLine, randomInitialCol, randomFinalLine, randomFinalCol))	{			
+				moveTo(randomInitialLine, randomInitialCol, randomFinalLine, randomFinalCol);
+				break;
+			}
+			else {
+				randomInitialLine = (int)Math.random()*length;
+				randomInitialCol = (int)Math.random()*length;
+				randomFinalLine = (int)Math.random()*length;
+				randomFinalCol = (int)Math.random()*length;
+			}
+		}
 	}
 		
 	
