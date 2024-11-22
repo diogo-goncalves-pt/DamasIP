@@ -106,24 +106,14 @@ public class DamasLogic {
 	}	
 
 	
-	/*void randomPlay(){
-		if(isWhiteTurn) {
-			for(int i = 0;i<matrix.length;i++) {
-				for(int c = 0;c<matrix[i].length;c++) {
-					if(matrix[i][c] == 2)
-						moveTo()
-				}
-			}
-			
-			
-		}
-		else {
-			
-		}
-			
-			
-	}*/
-	
-	
+	void randomPlay(){
+		int randomInitialLine = (int)Math.random()*length;
+		int randomInitialCol = (int)Math.random()*length;
+		int randomFinalLine = (int)Math.random()*length;
+		int randomFinalCol = (int)Math.random()*length;
+						
+		moveTo(randomInitialLine, randomInitialCol, randomFinalLine, randomFinalCol);
+	}
+		
 	
 }

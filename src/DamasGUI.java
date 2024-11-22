@@ -26,14 +26,13 @@ public class DamasGUI {
 	}
 	Color background(int line, int col) {
 		
-		if((line == initialLine && col == initialCol) && (logic.getPos()[line*logic.getLength() + col].piece() != null))
+		if((line == initialLine && col == initialCol) && (logic.getPos()[line*logic.getLength() + col].piece() != null)) 
 			return StandardColor.YELLOW;
-		
 		if(line % 2 == 0){
-			return col%2 != 0 ? StandardColor.GRAY: StandardColor.WHITE;
+			return col%2 != 0 ? StandardColor.BLACK: StandardColor.WHITE;
 		}
 		else
-			return col%2 == 0 ? StandardColor.GRAY : StandardColor.WHITE;
+			return col%2 == 0 ? StandardColor.BLACK : StandardColor.WHITE;
 		
 	}
 	
@@ -69,7 +68,7 @@ public class DamasGUI {
 	}
 	
 	void random(){
-		//logic.randomPlay();
+		logic.randomPlay();
 	}
 	void newGame() {
 		DamasGUI gui = new DamasGUI();
