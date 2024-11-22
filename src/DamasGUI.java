@@ -38,27 +38,32 @@ public class DamasGUI {
 	}
 	
 	String icon(int line, int col) {
-		int[][] mat = logic.getMatrix();
 		
-		if(mat[line][col] == 1)
+		if(logic.getPos()[line * logic.getLength() + col].piece() == "black")
 			return("black.png");
-		else if(mat[line][col] == 2)
+		else if(logic.getPos()[line * logic.getLength() + col].piece() == "white")
 			return "white.png";
 		return null;
 	}
 	
 	void click(int line, int col) {
+		int index = line * logic.getLength() + col;
 		if(count == 1) {
-			logic.moveTo(initialLine, initialCol, line, col);
-			count =0;
-			
-			initialLine = -1;
-			initialCol = -1;
+			if(logic.validPlay(initialLine,initialCol,line,col)) {
+				logic.moveTo(initialLine, initialCol, line, col);
+				count = 0;
+				initialLine = -1;
+				initialCol = -1;
+				if(logic.getWturn())
+					board.setTitle("As Brancas Jogam");
+				else
+					board.setTitle("As Pretas Jogam!");
+			}
 		}
-		if(count == 0) {
-			initialLine = line;
-			initialCol = col;
-			count = 1;
+		else if(count == 0 && ((logic.getWturn() && logic.getPos()[index].piece() == "white" && line != 0)||(!logic.getWturn() && logic.getPos()[index].piece() == "black" && line != logic.getLength()-1))) {
+				initialLine = line;
+				initialCol = col;
+				count = 1;
 		}
 		
 	}
