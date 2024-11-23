@@ -25,14 +25,13 @@ public class DamasGUI {
 		board.addAction("Load", this::load);
 	}
 	Color background(int line, int col) {
-		
 		if((line == initialLine && col == initialCol) && (logic.getPos()[line*logic.getLength() + col].piece() != null)) 
 			return StandardColor.YELLOW;
 		if(line % 2 == 0){
-			return col%2 != 0 ? StandardColor.BLACK: StandardColor.WHITE;
+			return col%2 != 0 ? StandardColor.GRAY: StandardColor.WHITE;
 		}
 		else
-			return col%2 == 0 ? StandardColor.BLACK : StandardColor.WHITE;
+			return col%2 == 0 ? StandardColor.GRAY : StandardColor.WHITE;
 		
 	}
 	
@@ -58,6 +57,11 @@ public class DamasGUI {
 				else
 					board.setTitle("As Pretas Jogam!");
 			}
+			if(initialLine == line && initialCol == col) {
+				count = 0;
+				initialLine = -1;
+				initialCol = -1;
+			}
 		}
 		else if(count == 0 && ((logic.getWturn() && logic.getPos()[index].piece() == "white" && line != 0)||(!logic.getWturn() && logic.getPos()[index].piece() == "black" && line != logic.getLength()-1))) {
 				initialLine = line;
@@ -69,6 +73,12 @@ public class DamasGUI {
 	
 	void random(){
 		logic.randomPlay();
+		if(logic.getError1()) 
+			board.showMessage("(Error1)nenhuma jogada encontrada :(");
+		if(logic.getWturn())
+			board.setTitle("As Brancas Jogam");
+		else
+			board.setTitle("As Pretas Jogam!");
 	}
 	void newGame() {
 		DamasGUI gui = new DamasGUI();
