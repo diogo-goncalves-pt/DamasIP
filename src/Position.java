@@ -2,6 +2,7 @@ public class Position {
 	private int line;
 	private int column;
 	private String piece; //white, black or null
+	private boolean playable = true;
 	
 	Position(int l, int c){
 		this.line = l;
@@ -26,6 +27,12 @@ public class Position {
 	String piece() {
 		return piece;
 	} 
+	void setPlayable(boolean isPlayable) {
+		playable = isPlayable;
+	}
+	boolean getPlayable() {
+		return playable;
+	}
 	
 	
 }

@@ -10,6 +10,7 @@ public class DamasGUI {
 	int count = 0;
 	int initialLine = -1;
 	int initialCol = -1;
+	
 
 	DamasGUI() {
 		logic = new DamasLogic(6,3);
@@ -25,13 +26,12 @@ public class DamasGUI {
 		board.addAction("Load", this::load);
 	}
 	Color background(int line, int col) {
+		if(logic.validPlay(initialLine, initialCol, line, col))
+			return StandardColor.NAVY;
 		if((line == initialLine && col == initialCol) && (logic.getPos()[line*logic.getLength() + col].piece() != null)) 
-			return StandardColor.YELLOW;
-		if(line % 2 == 0){
-			return col%2 != 0 ? StandardColor.GRAY: StandardColor.WHITE;
-		}
-		else
-			return col%2 == 0 ? StandardColor.GRAY : StandardColor.WHITE;
+			return StandardColor.MAROON;
+		return (line % 2 == 0) ? (col % 2 != 0 ? StandardColor.GRAY : StandardColor.WHITE)
+                : (col % 2 == 0 ? StandardColor.GRAY : StandardColor.WHITE);
 		
 	}
 	
@@ -46,39 +46,47 @@ public class DamasGUI {
 	
 	void click(int line, int col) {
 		int index = line * logic.getLength() + col;
-		if(count == 1) {
-			if(logic.validPlay(initialLine,initialCol,line,col)) {
-				logic.moveTo(initialLine, initialCol, line, col);
-				count = 0;
-				initialLine = -1;
-				initialCol = -1;
-				if(logic.getWturn())
-					board.setTitle("As Brancas Jogam");
-				else
-					board.setTitle("As Pretas Jogam!");
+		if(logic.isDraw())
+			board.showMessage("O jogo Empatou");
+		else {
+			if(count == 1) {
+				if(logic.validPlay(initialLine,initialCol,line,col)) {
+					logic.moveTo(initialLine, initialCol, line, col);
+					count = 0;
+					initialLine = -1;
+					initialCol = -1;
+					if(logic.getWturn())
+						board.setTitle("As Brancas Jogam");
+					else
+						board.setTitle("As Pretas Jogam!");
+				}
+				if(initialLine == line && initialCol == col) {
+					count = 0;
+					initialLine = -1;
+					initialCol = -1;
+				}
 			}
-			if(initialLine == line && initialCol == col) {
-				count = 0;
-				initialLine = -1;
-				initialCol = -1;
+			else if(count == 0 && ((logic.getWturn() && logic.getPos()[index].piece() == "white" && line != 0)||(!logic.getWturn() && logic.getPos()[index].piece() == "black" && line != logic.getLength()-1))) {
+					initialLine = line;
+					initialCol = col;
+					count = 1;
 			}
-		}
-		else if(count == 0 && ((logic.getWturn() && logic.getPos()[index].piece() == "white" && line != 0)||(!logic.getWturn() && logic.getPos()[index].piece() == "black" && line != logic.getLength()-1))) {
-				initialLine = line;
-				initialCol = col;
-				count = 1;
 		}
 		
 	}
 	
 	void random(){
-		logic.randomPlay();
-		if(logic.getError1()) 
-			board.showMessage("(Error1)nenhuma jogada encontrada :(");
-		if(logic.getWturn())
-			board.setTitle("As Brancas Jogam");
-		else
-			board.setTitle("As Pretas Jogam!");
+		if(logic.isDraw())
+			board.showMessage("O jogo Empatou");
+		else {
+			logic.randomPlay();
+			if(logic.getError1()) 
+				board.showMessage("(Error1)nenhuma jogada encontrada :(");
+			if(logic.getWturn())
+				board.setTitle("As Brancas Jogam");
+			else
+				board.setTitle("As Pretas Jogam!");
+		}
 	}
 	void newGame() {
 		DamasGUI gui = new DamasGUI();

@@ -87,16 +87,24 @@ public class DamasLogic {
 	}
 	
 	boolean isDraw() {
-		return (numberOfWhite==0 && numberOfBlack == 0)? true:false;
+		int countUnplayableWhite = 0;
+		int countUnplayableBlack = 0;
+		for(int i =0; i<pos.length; i++) {
+			if(pos[i].getPlayable() == false && pos[i].piece() == "white")
+				countUnplayableWhite++;
+			if(pos[i].getPlayable() == false && pos[i].piece() == "black")
+				countUnplayableBlack++;
+		}
+		return((countUnplayableBlack == countUnplayableWhite) && (countUnplayableBlack == numberOfBlack || countUnplayableWhite == numberOfWhite));
 	}
 	
 	boolean validPlay(int initialLine,int initialCol, int finalLine, int finalCol){
-		if((isWhiteTurn && initialLine > finalLine && initialLine != 0)||(!isWhiteTurn && initialLine< finalLine && initialLine != length-1)) {
-			if((pos[initialLine * length + initialCol].piece() !=  null) && (pos[finalLine * length + finalCol].piece() ==  null)) {
-				if(Math.abs(finalLine - initialLine)== 1 && Math.abs(finalCol - initialCol)== 1)
-					return true;
+			if((isWhiteTurn && initialLine > finalLine && initialLine > 0 && initialLine < length)||(!isWhiteTurn && initialLine < finalLine && initialLine >= 0 && initialLine < length -1)) {
+				if((pos[initialLine * length + initialCol].piece() !=  null) && (pos[finalLine * length + finalCol].piece() ==  null)) {
+					if(Math.abs(finalLine - initialLine)== 1 && Math.abs(finalCol - initialCol)== 1)
+						return true;
+				}
 			}
-		}
 		return false;
 	}
 	
@@ -104,10 +112,16 @@ public class DamasLogic {
 		if(isWhiteTurn) {
 			pos[initialLine *length + initialCol].setPiece(null);
 			pos[finalLine *length + finalCol].setPiece("white");
+			if(finalLine == 0) {
+				pos[finalLine *length + finalCol].setPlayable(false);;
+			}
 		}
 		else {
 			pos[initialLine *length + initialCol].setPiece(null);
 			pos[finalLine *length + finalCol].setPiece("black");
+			if(finalLine == length -1) {
+				pos[finalLine *length + finalCol].setPlayable(false);;
+			}
 		}
 		isWhiteTurn =! isWhiteTurn;
 	}	
