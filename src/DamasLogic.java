@@ -14,6 +14,7 @@ public class DamasLogic {
 	DamasLogic(){
 		pos = new Position[64];
 		numberOfWhite = 12;
+		numberOfBlack = numberOfWhite;
 		length = 8;
 	}
 	DamasLogic(int length, int numberOfStones){
@@ -99,12 +100,18 @@ public class DamasLogic {
 	}
 	
 	boolean validPlay(int initialLine,int initialCol, int finalLine, int finalCol){
-			if((isWhiteTurn && initialLine > finalLine && initialLine > 0 && initialLine < length)||(!isWhiteTurn && initialLine < finalLine && initialLine >= 0 && initialLine < length -1)) {
-				if((pos[initialLine * length + initialCol].piece() !=  null) && (pos[finalLine * length + finalCol].piece() ==  null)) {
-					if(Math.abs(finalLine - initialLine)== 1 && Math.abs(finalCol - initialCol)== 1)
-						return true;
-				}
+		if(isPossibleTocapture(initialLine, initialCol, finalLine, finalCol) && Math.abs(finalLine - initialLine)== 2 && Math.abs(finalCol - initialCol)== 2) {
+			if(pos[finalLine * length + finalCol].piece() == null) {
+				if((isWhiteTurn && initialLine > finalLine && initialLine > 0 && initialLine < length)||(!isWhiteTurn && initialLine < finalLine && initialLine >= 0 && initialLine < length -1))
+					return true;
 			}
+		}
+		if((isWhiteTurn && initialLine > finalLine && initialLine > 0 && initialLine < length)||(!isWhiteTurn && initialLine < finalLine && initialLine >= 0 && initialLine < length -1)) {
+			if((pos[initialLine * length + initialCol].piece() !=  null) && (pos[finalLine * length + finalCol].piece() ==  null)) {
+				if(Math.abs(finalLine - initialLine)== 1 && Math.abs(finalCol - initialCol)== 1)
+					return true;
+			}
+		}
 		return false;
 	}
 	
@@ -154,7 +161,7 @@ public class DamasLogic {
 		int count = 0;
 		int numberOfTrys = 0;
 		Position randomPiece = oneColorPiece[(int)(Math.random()*oneColorPiece.length)];
-		while (numberOfTrys <= 100) {
+		while (numberOfTrys <= 100) { 
 			for(int l = 0; l < length; l++ ) {
 				for(int c = 0; c<length; c++) {
 					if(validPlay(randomPiece.getLine(), randomPiece.getCol(), l, c)) {
@@ -183,6 +190,28 @@ public class DamasLogic {
 				Error1 = true;
 			}
 			numberOfTrys ++;
+		}
+	}
+	boolean isPossibleTocapture(int initialLine, int initialCol,int finalLine,int finalCol) {
+		int middlePieceLine = (initialLine + finalLine)/2;
+		int middlePieceCol = (initialCol + finalCol)/2;
+		
+		if(pos[middlePieceLine * length + middlePieceCol].piece() != null)
+			return true;
+		return false;
+	}
+	void capture(int initialLine, int initialCol,int finalLine,int finalCol) { //line e col sao locais onde a peca vai
+		int middlePieceLine = (initialLine + finalLine)/2;
+		int middlePieceCol = (initialCol + finalCol)/2;
+		
+		if(isPossibleTocapture(initialLine, initialCol, finalLine, finalCol)) {
+			pos[middlePieceLine * length + middlePieceCol].setPiece(null);
+			pos[initialLine *length + initialCol].setPiece(null);
+		}
+		if(isWhiteTurn) {
+			pos[finalLine * length + finalCol].setPiece("white");		}
+		else {
+			pos[finalLine * length + finalCol].setPiece("black");
 		}
 	}
 }
