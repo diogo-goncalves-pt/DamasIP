@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 import pt.iscte.guitoo.Color;
 import pt.iscte.guitoo.StandardColor;
 import pt.iscte.guitoo.board.Board;
@@ -13,7 +11,7 @@ public class DamasGUI {
 	
 
 	DamasGUI() {
-		logic = new DamasLogic(6,3);
+		logic = new DamasLogic();
 		logic.posFill();
 		logic.firstPlace();
 		board = new Board("As Brancas jogam   " + logic.getNumberOfWStones() + "B | " + logic.getNumberOfBStones() + "P", logic.getLength(), logic.getLength(), 80);

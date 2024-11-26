@@ -110,7 +110,7 @@ public class DamasLogic {
 			if(pos[i].getPlayable() == false && pos[i].piece() == "black")
 				countUnplayableBlack++;
 		}
-		return((countUnplayableBlack == countUnplayableWhite) && (countUnplayableBlack == numberOfBlack || countUnplayableWhite == numberOfWhite));
+		return((countUnplayableBlack == countUnplayableWhite) && (countUnplayableBlack == numberOfBlack && countUnplayableWhite == numberOfWhite));
 	}
 	
 	boolean validPlay(int initialLine,int initialCol, int finalLine, int finalCol){
@@ -137,8 +137,13 @@ public class DamasLogic {
 		if(isWhiteTurn) {
 			pos[initialLine *length + initialCol].setPiece(null);
 			pos[finalLine *length + finalCol].setPiece("white");
-			if(finalLine == 0) {
+			if(finalLine == 0)
 				pos[finalLine *length + finalCol].setPlayable(false);
+			for(int l = 0; l<length ; l++) {
+				for(int c = 0; c<length; c++) {
+					if(!validPlay(finalLine, finalCol,l,c))
+						pos[finalLine *length + finalCol].setPlayable(false);
+				}
 			}
 		}
 		else {
@@ -147,7 +152,12 @@ public class DamasLogic {
 			if(finalLine == length -1) {
 				pos[finalLine *length + finalCol].setPlayable(false);
 			}
-			
+			for(int l = 0; l<length ; l++) {
+				for(int c = 0; c<length; c++) {
+					if(!validPlay(finalLine, finalCol,l,c))
+						pos[finalLine *length + finalCol].setPlayable(false);
+				}
+			}
 		}
 		isWhiteTurn =! isWhiteTurn;
 	}	
@@ -273,13 +283,22 @@ public class DamasLogic {
 			pos[finalLine * length + finalCol].setPiece("white");		
 			numberOfBlack --;
 			}
-		else {
+		else{
 			pos[finalLine * length + finalCol].setPiece("black");
 			numberOfWhite--;
 		}
-		isWhiteTurn = !isWhiteTurn;
+		if(!captureAvailable())
+			isWhiteTurn = !isWhiteTurn;
 	}
 	boolean win() {
+		if(numberOfBlack == 0 && numberOfWhite != 0) {
+			whiteWin = true;
+			return true;
+		}
+		if(numberOfBlack != 0 && numberOfWhite == 0) {
+			whiteWin = false;
+			return true;
+		}
 		if(!isPossibleToMove() && !isDraw()) {
 			if(numberOfWhite>numberOfBlack) {
 				whiteWin = true;
@@ -291,6 +310,15 @@ public class DamasLogic {
 			}
 		}
 		return false;
+	}
+	public String toString(int[][] matriz) {
+		String text = "";
+		for(int l = 0; l < matriz.length; l++) {
+			for(int c = 0; c < matriz.length; c++) {
+				text = text + matriz[l][c] + " , ";
+			}
+		}
+		return text;
 	}
 }
 		
