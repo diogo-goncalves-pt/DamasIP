@@ -84,6 +84,12 @@ public class DamasGUI {
 	}
 	
 	void random(){
+		if(logic.win()) {
+			if(logic.getWhiteWin())
+				board.showMessage("As brancas ganharam!");
+			else
+				board.showMessage("As pretas ganharam!");
+		}
 		if(logic.isDraw())
 			board.showMessage("O jogo Empatou");
 		else {
@@ -102,7 +108,7 @@ public class DamasGUI {
 	}
 	void save() {
 		String saveGame = board.promptText("Nome do ficheiro: ");
-		System.out.println(saveGame);;
+		logic.saveGame(saveGame);
 	}
 	void load() {
 		String saveGame = board.promptText("Ficheiro a carregar: ");

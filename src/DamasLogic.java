@@ -1,3 +1,7 @@
+import java.io.PrintWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+
 public class DamasLogic {
 	
 	private Position[] pos;
@@ -28,10 +32,11 @@ public class DamasLogic {
 		numberOfBlack = numberOfWhite;
 		this.length = length;
 	}
-	DamasLogic(int SaveNumber){
-		pos = new Position[64];
-		numberOfWhite = 12;
-		//nao esquecer length
+	DamasLogic(Position[] savedPos, int savedWhitePieces, int savedBlackPieces){
+		pos = savedPos;
+		numberOfWhite = savedWhitePieces;
+		numberOfBlack = savedBlackPieces;
+		
 	}
 	
 	void posFill() {
@@ -189,40 +194,42 @@ public class DamasLogic {
 		Error1 = false;
 		int count = 0;
 		int numberOfTrys = 0;
-		Position randomPiece = oneColorPiece[(int)(Math.random()*oneColorPiece.length)];
-		while (numberOfTrys <= 100) { 
-			for(int l = 0; l < length; l++ ) {
-				for(int c = 0; c<length; c++) {
-					if(validPlay(randomPiece.getLine(), randomPiece.getCol(), l, c)) {
-						count ++;
-					}
-				}
-			}
-			if(count > 0) {
-				validPlays = new Position[count];
-				count = 0;
+		if(!win()) {
+			Position randomPiece = oneColorPiece[(int)(Math.random()*oneColorPiece.length)];
+			while (numberOfTrys <= 100) { 
 				for(int l = 0; l < length; l++ ) {
-					for(int c = 0; c <length; c++) {
-						if((isWhiteTurn && randomPiece.getLine() != 0) || (!isWhiteTurn && randomPiece.getLine() != length -1))
-							if(validPlay(randomPiece.getLine(), randomPiece.getCol(), l, c)) {
-								validPlays[count] = pos[l*length + c];
-								count ++;
-							}
+					for(int c = 0; c<length; c++) {
+						if(validPlay(randomPiece.getLine(), randomPiece.getCol(), l, c)) {
+							count ++;
+						}
 					}
 				}
-				Position randomPlay = validPlays[(int)(Math.random()*validPlays.length)];
-				if(isPossibleTocapture(randomPiece.getLine(), randomPiece.getCol(), randomPlay.getLine(),  randomPlay.getCol())) 
-					capture(randomPiece.getLine(),randomPiece.getCol(), randomPlay.getLine(),  randomPlay.getCol());
-				
-				else
-					moveTo(randomPiece.getLine(), randomPiece.getCol(), randomPlay.getLine(), randomPlay.getCol());
-				break;
+				if(count > 0) {
+					validPlays = new Position[count];
+					count = 0;
+					for(int l = 0; l < length; l++ ) {
+						for(int c = 0; c <length; c++) {
+							if((isWhiteTurn && randomPiece.getLine() != 0) || (!isWhiteTurn && randomPiece.getLine() != length -1))
+								if(validPlay(randomPiece.getLine(), randomPiece.getCol(), l, c)) {
+									validPlays[count] = pos[l*length + c];
+									count ++;
+								}
+						}
+					}
+					Position randomPlay = validPlays[(int)(Math.random()*validPlays.length)];
+					if(isPossibleTocapture(randomPiece.getLine(), randomPiece.getCol(), randomPlay.getLine(),  randomPlay.getCol())) 
+						capture(randomPiece.getLine(),randomPiece.getCol(), randomPlay.getLine(),  randomPlay.getCol());
+					
+					else
+						moveTo(randomPiece.getLine(), randomPiece.getCol(), randomPlay.getLine(), randomPlay.getCol());
+					break;
+				}
+				randomPiece = oneColorPiece[(int)(Math.random()*oneColorPiece.length)];
+				if(numberOfTrys == 100) {
+					Error1 = true;
+				}
+				numberOfTrys ++;
 			}
-			randomPiece = oneColorPiece[(int)(Math.random()*oneColorPiece.length)];
-			if(numberOfTrys == 100) {
-				Error1 = true;
-			}
-			numberOfTrys ++;
 		}
 	}
 	
@@ -311,14 +318,21 @@ public class DamasLogic {
 		}
 		return false;
 	}
-	public String toString(int[][] matriz) {
-		String text = "";
-		for(int l = 0; l < matriz.length; l++) {
-			for(int c = 0; c < matriz.length; c++) {
-				text = text + matriz[l][c] + " , ";
-			}
+	void saveGame(String saveName) {
+		try {
+			PrintWriter writter = new PrintWriter(new File("/ProjetoDamas/src/SaveGame.txt"));
+			writter.print(saveName);
+			/*writter.print(" ");
+			writter.print(pos);
+			writter.print(" ");
+			writter.print(numberOfWhite);
+			writter.print(" ");
+			writter.print(numberOfBlack);*/
+			writter.close();
 		}
-		return text;
+		catch(FileNotFoundException e){
+			System.err.println("Erro a escrever no ficheiro");
+		}
 	}
 }
 		
