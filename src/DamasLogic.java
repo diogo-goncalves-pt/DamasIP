@@ -1,25 +1,30 @@
 public class DamasLogic {
 	
-	Position[] pos;
-	Position[] oneColorPiece;
-	Position[] validPlays;
+	private Position[] pos;
+	private Position[] oneColorPiece;
+	private Position[] validPlays;
 	private boolean isWhiteTurn = true;
+	private int initialOneColorPieces;
 	private int numberOfWhite;
 	private int numberOfBlack;
-	int length;
-	boolean Error1 = true;
+	private int length;
+	private boolean whiteWin;
+	private boolean Error1 = true;
 	
 	//CONSTRUTORES
 	
 	DamasLogic(){
 		pos = new Position[64];
-		numberOfWhite = 12;
+		initialOneColorPieces = 12;
+		numberOfWhite = initialOneColorPieces;
 		numberOfBlack = numberOfWhite;
 		length = 8;
 	}
 	DamasLogic(int length, int numberOfStones){
+		assert(numberOfStones <= (length*length)/4);
 		pos = new Position[length*length];
-		numberOfWhite = numberOfStones;
+		initialOneColorPieces = numberOfStones;
+		numberOfWhite = initialOneColorPieces;
 		numberOfBlack = numberOfWhite;
 		this.length = length;
 	}
@@ -45,8 +50,11 @@ public class DamasLogic {
 	int getLength() {
 		return length;
 	}
-	int getNumberOfStones() {
+	int getNumberOfWStones() {
 		return numberOfWhite;
+	}
+	int getNumberOfBStones() {
+		return numberOfBlack;
 	}
 	int setnumberOfStones(int num) {
 		return num;
@@ -60,11 +68,14 @@ public class DamasLogic {
 	Position[] getPos() {
 		return pos;
 	}
+	boolean getWhiteWin() {
+		return whiteWin;
+	}
 	
 	//FUNCOES DE LOGICA
 	
 	void firstPlace() {
-		int numPieces = numberOfWhite;
+		int numPieces = initialOneColorPieces;
 		
 		for(int i = 0; i<length; i++) {
 			for(int c = 0; c<length;c++) {
@@ -86,6 +97,9 @@ public class DamasLogic {
 		}
 		
 	}
+	boolean isWithinBounds(int line, int col) {
+		return((line >= 0 && line < length) && (col >=0 && col< length));
+	}
 	
 	boolean isDraw() {
 		int countUnplayableWhite = 0;
@@ -100,16 +114,20 @@ public class DamasLogic {
 	}
 	
 	boolean validPlay(int initialLine,int initialCol, int finalLine, int finalCol){
-		if(isPossibleTocapture(initialLine, initialCol, finalLine, finalCol) && Math.abs(finalLine - initialLine)== 2 && Math.abs(finalCol - initialCol)== 2) {
-			if(pos[finalLine * length + finalCol].piece() == null) {
-				if((isWhiteTurn && initialLine > finalLine && initialLine > 0 && initialLine < length)||(!isWhiteTurn && initialLine < finalLine && initialLine >= 0 && initialLine < length -1))
-					return true;
+		if(captureAvailable()){
+			if(isPossibleTocapture(initialLine, initialCol, finalLine, finalCol)) {
+				if(pos[finalLine * length + finalCol].piece() == null && Math.abs(finalLine - initialLine)== 2 && Math.abs(finalCol - initialCol)== 2) {
+					if((isWhiteTurn && initialLine > finalLine && initialLine > 0 && initialLine < length)||(!isWhiteTurn && initialLine < finalLine && initialLine >= 0 && initialLine < length -1))
+						return true;
+				}
 			}
 		}
-		if((isWhiteTurn && initialLine > finalLine && initialLine > 0 && initialLine < length)||(!isWhiteTurn && initialLine < finalLine && initialLine >= 0 && initialLine < length -1)) {
-			if((pos[initialLine * length + initialCol].piece() !=  null) && (pos[finalLine * length + finalCol].piece() ==  null)) {
-				if(Math.abs(finalLine - initialLine)== 1 && Math.abs(finalCol - initialCol)== 1)
-					return true;
+		else {
+			if((isWhiteTurn && initialLine > finalLine && initialLine > 0 && initialLine < length)||(!isWhiteTurn && initialLine < finalLine && initialLine >= 0 && initialLine < length -1)) {
+				if((pos[initialLine * length + initialCol].piece() !=  null) && (pos[finalLine * length + finalCol].piece() ==  null)) {
+					if(Math.abs(finalLine - initialLine)== 1 && Math.abs(finalCol - initialCol)== 1)
+						return true;
+				}
 			}
 		}
 		return false;
@@ -120,15 +138,16 @@ public class DamasLogic {
 			pos[initialLine *length + initialCol].setPiece(null);
 			pos[finalLine *length + finalCol].setPiece("white");
 			if(finalLine == 0) {
-				pos[finalLine *length + finalCol].setPlayable(false);;
+				pos[finalLine *length + finalCol].setPlayable(false);
 			}
 		}
 		else {
 			pos[initialLine *length + initialCol].setPiece(null);
 			pos[finalLine *length + finalCol].setPiece("black");
 			if(finalLine == length -1) {
-				pos[finalLine *length + finalCol].setPlayable(false);;
+				pos[finalLine *length + finalCol].setPlayable(false);
 			}
+			
 		}
 		isWhiteTurn =! isWhiteTurn;
 	}	
@@ -182,7 +201,11 @@ public class DamasLogic {
 					}
 				}
 				Position randomPlay = validPlays[(int)(Math.random()*validPlays.length)];
-				moveTo(randomPiece.getLine(), randomPiece.getCol(), randomPlay.getLine(), randomPlay.getCol());
+				if(isPossibleTocapture(randomPiece.getLine(), randomPiece.getCol(), randomPlay.getLine(),  randomPlay.getCol())) 
+					capture(randomPiece.getLine(),randomPiece.getCol(), randomPlay.getLine(),  randomPlay.getCol());
+				
+				else
+					moveTo(randomPiece.getLine(), randomPiece.getCol(), randomPlay.getLine(), randomPlay.getCol());
 				break;
 			}
 			randomPiece = oneColorPiece[(int)(Math.random()*oneColorPiece.length)];
@@ -192,12 +215,50 @@ public class DamasLogic {
 			numberOfTrys ++;
 		}
 	}
+	
 	boolean isPossibleTocapture(int initialLine, int initialCol,int finalLine,int finalCol) {
 		int middlePieceLine = (initialLine + finalLine)/2;
 		int middlePieceCol = (initialCol + finalCol)/2;
 		
-		if(pos[middlePieceLine * length + middlePieceCol].piece() != null)
-			return true;
+		if(pos[finalLine * length + finalCol].piece() == null) {
+			if(pos[middlePieceLine * length + middlePieceCol].piece() == "black" && isWhiteTurn && finalLine < initialLine)
+				return true;
+			else if(pos[middlePieceLine * length + middlePieceCol].piece() == "white" && !isWhiteTurn && finalLine > initialLine)
+				return true;
+		}
+		return false;
+	}
+	boolean isPossibleToMove() {
+		for(int l = 0; l < length ; l ++) {
+			for(int c = 0; c<length; c++) {
+				if(pos[l * length + c].piece() == "white" && isWhiteTurn || pos[l * length + c].piece() == "black" && !isWhiteTurn) {
+					int[][] playableDirections = {{1,1},{1,-1},{-1,1},{-1,-1}};
+					for(int i = 0; i<playableDirections.length; i++) {
+						int finalLine = l + playableDirections[i][0];
+						int finalCol = c + playableDirections[i][1];
+						if(isWithinBounds(finalLine, finalCol) && validPlay(l, c, finalLine, finalCol) || captureAvailable())
+							return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	boolean captureAvailable() {
+		for(int l = 0; l < length ; l ++) {
+			for(int c = 0; c<length; c++) {
+				if(pos[l * length + c].piece() == "white" && isWhiteTurn || pos[l * length + c].piece() == "black" && !isWhiteTurn) {
+					int[][] captureDirections = {{2,2},{2,-2},{-2,2},{-2,-2}};
+					for(int i = 0; i<captureDirections.length; i++) {
+						int finalLine = l + captureDirections[i][0];
+						int finalCol = c + captureDirections[i][1];
+						if(isWithinBounds(finalLine, finalCol) && isPossibleTocapture(l, c, finalLine, finalCol))
+							return true;
+					}
+				}
+			}
+		}
 		return false;
 	}
 	void capture(int initialLine, int initialCol,int finalLine,int finalCol) { //line e col sao locais onde a peca vai
@@ -209,10 +270,27 @@ public class DamasLogic {
 			pos[initialLine *length + initialCol].setPiece(null);
 		}
 		if(isWhiteTurn) {
-			pos[finalLine * length + finalCol].setPiece("white");		}
+			pos[finalLine * length + finalCol].setPiece("white");		
+			numberOfBlack --;
+			}
 		else {
 			pos[finalLine * length + finalCol].setPiece("black");
+			numberOfWhite--;
 		}
+		isWhiteTurn = !isWhiteTurn;
+	}
+	boolean win() {
+		if(!isPossibleToMove() && !isDraw()) {
+			if(numberOfWhite>numberOfBlack) {
+				whiteWin = true;
+				return true;
+			}
+			if(numberOfWhite<numberOfBlack) {
+				whiteWin = false;
+				return true;
+			}
+		}
+		return false;
 	}
 }
 		
