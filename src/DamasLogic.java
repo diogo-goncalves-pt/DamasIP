@@ -1,4 +1,5 @@
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -320,14 +321,22 @@ public class DamasLogic {
 	}
 	void saveGame(String saveName) {
 		try {
-			PrintWriter writter = new PrintWriter(new File("/ProjetoDamas/src/SaveGame.txt"));
+			PrintWriter writter = new PrintWriter(new File("SaveGame.txt"));
 			writter.print(saveName);
-			/*writter.print(" ");
-			writter.print(pos);
 			writter.print(" ");
+			for(int i = 0; i<pos.length; i++) {
+				writter.print(pos[i].getLine());
+				writter.print(" ");
+				writter.print(pos[i].getCol());
+				writter.print(" ");
+				//writter.print(pos[i].piece());
+				//writter.print(" ");
+			}
 			writter.print(numberOfWhite);
 			writter.print(" ");
-			writter.print(numberOfBlack);*/
+			writter.print(numberOfBlack);
+			writter.print(" ");
+			writter.print(length);
 			writter.close();
 		}
 		catch(FileNotFoundException e){

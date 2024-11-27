@@ -1,6 +1,10 @@
 import pt.iscte.guitoo.Color;
 import pt.iscte.guitoo.StandardColor;
 import pt.iscte.guitoo.board.Board;
+import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
 
 public class DamasGUI {
 	Board board;
@@ -11,9 +15,9 @@ public class DamasGUI {
 	
 
 	DamasGUI() {
-		logic = new DamasLogic();
-		logic.posFill();
-		logic.firstPlace();
+		this.logic = new DamasLogic(6,3);
+		this.logic.posFill();
+		this.logic.firstPlace();
 		board = new Board("As Brancas jogam   " + logic.getNumberOfWStones() + "B | " + logic.getNumberOfBStones() + "P", logic.getLength(), logic.getLength(), 80);
 		board.addMouseListener(this::click);
 		board.setBackgroundProvider(this::background);
@@ -23,6 +27,19 @@ public class DamasGUI {
 		board.addAction("Save",this::save);
 		board.addAction("Load", this::load);
 	}
+	DamasGUI(DamasLogic newLogic, int length) {
+		this.logic = newLogic;
+		board = new Board("As Brancas jogam   " + logic.getNumberOfWStones() + "B | " + logic.getNumberOfBStones() + "P", length, length, 80);
+		board.addMouseListener(this::click);
+		board.setBackgroundProvider(this::background);
+		board.setIconProvider(this::icon);
+		board.addAction("Random", this::random);
+		board.addAction("New", this::newGame);
+		board.addAction("Save",this::save);
+		board.addAction("Load", this::load);
+		
+	}
+	
 	Color background(int line, int col) {
 		if(logic.validPlay(initialLine, initialCol, line, col))
 			return StandardColor.NAVY;
@@ -34,8 +51,7 @@ public class DamasGUI {
 	}
 	
 	String icon(int line, int col) {
-		
-		if(logic.getPos()[line * logic.getLength() + col].piece() == "black")
+		if(logic.getPos()[line * logic.getLength() + col].piece() == "black") 
 			return("black.png");
 		else if(logic.getPos()[line * logic.getLength() + col].piece() == "white")
 			return "white.png";
@@ -44,6 +60,7 @@ public class DamasGUI {
 	
 	void click(int line, int col) {
 		int index = line * logic.getLength() + col;
+		System.out.println(logic.getPos()[index].piece());
 		if(logic.win()) {
 			if(logic.getWhiteWin())
 				board.showMessage("As brancas ganharam!");
@@ -108,10 +125,45 @@ public class DamasGUI {
 	}
 	void save() {
 		String saveGame = board.promptText("Nome do ficheiro: ");
+		assert(saveGame != null);
 		logic.saveGame(saveGame);
 	}
 	void load() {
+		Position[] savedPos = new Position[logic.getLength() * logic.getLength()];
+		int savedNumWhite = 0;
+		int savedNumBlack = 0;
+		int newLength = 0;
 		String saveGame = board.promptText("Ficheiro a carregar: ");
+		try {
+			Scanner scanner = new Scanner(new File("SaveGame.txt"));
+			
+			while(scanner.hasNext()) {
+				if(scanner.next().equals(saveGame)) {
+					for(int i = 0; i<logic.getPos().length; i++) {
+						savedPos[i] = new Position(scanner.nextInt(),scanner.nextInt());
+						if(scanner.next().equals("white"))
+							savedPos[i].setPiece("white");
+						else
+							savedPos[i].setPiece("black");
+					}
+					savedNumWhite = scanner.nextInt();
+					savedNumBlack = scanner.nextInt();
+					newLength = scanner.nextInt();
+				}
+				
+				
+			}
+			
+			scanner.close();
+		}
+		catch(FileNotFoundException e){
+			System.err.println("Erro a ler o ficheiro");
+		}
+
+		DamasLogic logic = new DamasLogic(savedPos, savedNumWhite, savedNumBlack);
+	    DamasGUI gui = new DamasGUI(logic, newLength);
+	    gui.start();
+		
 	}
 
 	void start() {
