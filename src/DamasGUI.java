@@ -29,6 +29,7 @@ public class DamasGUI {
 	}
 	DamasGUI(DamasLogic newLogic, int length) {
 		this.logic = newLogic;
+		this.logic.posFill();
 		board = new Board("As Brancas jogam   " + logic.getNumberOfWStones() + "B | " + logic.getNumberOfBStones() + "P", length, length, 80);
 		board.addMouseListener(this::click);
 		board.setBackgroundProvider(this::background);
@@ -136,19 +137,17 @@ public class DamasGUI {
 		String saveGame = board.promptText("Ficheiro a carregar: ");
 		try {
 			Scanner scanner = new Scanner(new File("SaveGame.txt"));
-			
 			while(scanner.hasNext()) {
 				if(scanner.next().equals(saveGame)) {
 					for(int i = 0; i<logic.getPos().length; i++) {
 						savedPos[i] = new Position(scanner.nextInt(),scanner.nextInt());
-						if(scanner.next().equals("white"))
-							savedPos[i].setPiece("white");
-						else
-							savedPos[i].setPiece("black");
 					}
 					savedNumWhite = scanner.nextInt();
 					savedNumBlack = scanner.nextInt();
 					newLength = scanner.nextInt();
+					for(int j = 0; j<logic.getPos().length; j++) {
+						savedPos[j].setPiece(scanner.next());
+					}
 				}
 				
 				

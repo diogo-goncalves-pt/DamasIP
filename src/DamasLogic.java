@@ -317,27 +317,23 @@ public class DamasLogic {
 				return true;
 			}
 		}
-		return false;
+		return false; 
 	}
 	void saveGame(String saveName) {
 		try {
 			PrintWriter writter = new PrintWriter(new File("SaveGame.txt"));
-			writter.print(saveName);
-			writter.print(" ");
-			for(int i = 0; i<pos.length; i++) {
-				writter.print(pos[i].getLine());
-				writter.print(" ");
-				writter.print(pos[i].getCol());
-				writter.print(" ");
-				//writter.print(pos[i].piece());
-				//writter.print(" ");
+			writter.println(numberOfWhite);
+			writter.println(numberOfBlack);
+			writter.println(length);
+			for(int l = 0; l< pos.length; l++) {
+				if(pos[l].piece() == null)
+					writter.println("null");
+				else if(pos[l].piece() == "black")
+					writter.println("black");
+				else
+					writter.close();
+				
 			}
-			writter.print(numberOfWhite);
-			writter.print(" ");
-			writter.print(numberOfBlack);
-			writter.print(" ");
-			writter.print(length);
-			writter.close();
 		}
 		catch(FileNotFoundException e){
 			System.err.println("Erro a escrever no ficheiro");
