@@ -29,7 +29,6 @@ public class DamasGUI {
 	}
 	DamasGUI(DamasLogic newLogic, int length) {
 		this.logic = newLogic;
-		this.logic.posFill();
 		board = new Board("As Brancas jogam   " + logic.getNumberOfWStones() + "B | " + logic.getNumberOfBStones() + "P", length, length, 80);
 		board.addMouseListener(this::click);
 		board.setBackgroundProvider(this::background);
@@ -52,11 +51,13 @@ public class DamasGUI {
 	}
 	
 	String icon(int line, int col) {
-		if(logic.getPos()[line * logic.getLength() + col].piece() == "black") 
-			return("black.png");
-		else if(logic.getPos()[line * logic.getLength() + col].piece() == "white")
-			return "white.png";
-		return null;
+		String piece = logic.getPos()[line * logic.getLength() + col].piece();
+	    if ("black".equals(piece)) 
+	        return "black.png";
+	    else if ("white".equals(piece))
+	        return "white.png";
+	    else
+	    	return null;
 	}
 	
 	void click(int line, int col) {
@@ -130,38 +131,34 @@ public class DamasGUI {
 		logic.saveGame(saveGame);
 	}
 	void load() {
-		Position[] savedPos = new Position[logic.getLength() * logic.getLength()];
-		int savedNumWhite = 0;
-		int savedNumBlack = 0;
-		int newLength = 0;
-		String saveGame = board.promptText("Ficheiro a carregar: ");
+		int length = 0;
+		String saveGame = board.promptText("Nome do ficheiro: ");
 		try {
 			Scanner scanner = new Scanner(new File("SaveGame.txt"));
 			while(scanner.hasNext()) {
 				if(scanner.next().equals(saveGame)) {
-					for(int i = 0; i<logic.getPos().length; i++) {
-						savedPos[i] = new Position(scanner.nextInt(),scanner.nextInt());
+					length = scanner.nextInt();
+					for(int i = 0; i<length*length; i ++) {
+						logic.setPos(new Position(scanner.nextInt(), scanner.nextInt()),i);
+						String piece = scanner.next();
+						if(piece == "null")
+							logic.getPos()[i].setPiece("null");
+						else 
+							logic.getPos()[i].setPiece(piece);
 					}
-					savedNumWhite = scanner.nextInt();
-					savedNumBlack = scanner.nextInt();
-					newLength = scanner.nextInt();
-					for(int j = 0; j<logic.getPos().length; j++) {
-						savedPos[j].setPiece(scanner.next());
-					}
+					break;
 				}
-				
-				
 			}
 			
 			scanner.close();
 		}
 		catch(FileNotFoundException e){
-			System.err.println("Erro a ler o ficheiro");
+			System.err.println("Erro a carregar o jogo");
 		}
-
-		DamasLogic logic = new DamasLogic(savedPos, savedNumWhite, savedNumBlack);
-	    DamasGUI gui = new DamasGUI(logic, newLength);
-	    gui.start();
+		DamasLogic newLogic = new DamasLogic(logic.getPos());
+		DamasGUI gui = new DamasGUI(newLogic, length);
+		gui.start();
+		
 		
 	}
 
