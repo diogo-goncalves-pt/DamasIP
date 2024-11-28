@@ -1,7 +1,7 @@
 import java.io.PrintWriter;
-import java.util.Arrays;
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class DamasLogic {
 	
@@ -33,13 +33,16 @@ public class DamasLogic {
 		numberOfBlack = numberOfWhite;
 		this.length = length;
 	}
-	DamasLogic(Position[] savedPos){
+	DamasLogic(Position[] savedPos, boolean Whiteturn){
 		pos = savedPos;
+		this.isWhiteTurn = Whiteturn;
+		this.numberOfWhite = 0;
+		this.numberOfBlack = 0;
 		this.length = (int)Math.sqrt(savedPos.length);
 		for(int i = 0; i < savedPos.length; i++) {
-			if(savedPos[i].piece() == "white")
+			if(("white").equals(savedPos[i].piece()))
 				numberOfWhite++;
-			if(savedPos[i].piece() == "black")
+			if(("black").equals(savedPos[i].piece()))
 				numberOfBlack++;
 		}
 	}
@@ -118,9 +121,9 @@ public class DamasLogic {
 		int countUnplayableWhite = 0;
 		int countUnplayableBlack = 0;
 		for(int i =0; i<pos.length; i++) {
-			if(pos[i].getPlayable() == false && pos[i].piece() == "white")
+			if(pos[i].getPlayable() == false && ("white").equals(pos[i].piece()))
 				countUnplayableWhite++;
-			if(pos[i].getPlayable() == false && pos[i].piece() == "black")
+			if(pos[i].getPlayable() == false && ("black").equals(pos[i].piece()))
 				countUnplayableBlack++;
 		}
 		return((countUnplayableBlack == countUnplayableWhite) && (countUnplayableBlack == numberOfBlack && countUnplayableWhite == numberOfWhite));
@@ -180,7 +183,7 @@ public class DamasLogic {
 		if(isWhiteTurn) {
 			oneColorPiece = new Position[numberOfWhite];
 			for(int i = 0; i<pos.length;i++) {
-				if(pos[i].piece() == "white") {
+				if(("white").equals(pos[i].piece())) {
 					oneColorPiece[count] = pos[i];
 					count++;
 				}
@@ -189,7 +192,7 @@ public class DamasLogic {
 		else {
 			oneColorPiece = new Position[numberOfBlack];
 			for(int i = 0; i<pos.length;i++) {
-				if(pos[i].piece() == "black") {
+				if(("black").equals(pos[i].piece())) {
 					oneColorPiece[count] = pos[i];
 					count++;
 				}
@@ -246,9 +249,9 @@ public class DamasLogic {
 		int middlePieceCol = (initialCol + finalCol)/2;
 		
 		if(pos[finalLine * length + finalCol].piece() == null) {
-			if(pos[middlePieceLine * length + middlePieceCol].piece() == "black" && isWhiteTurn && finalLine < initialLine)
+			if(("black").equals(pos[middlePieceLine * length + middlePieceCol].piece()) && isWhiteTurn && finalLine < initialLine)
 				return true;
-			else if(pos[middlePieceLine * length + middlePieceCol].piece() == "white" && !isWhiteTurn && finalLine > initialLine)
+			else if(("white").equals(pos[middlePieceLine * length + middlePieceCol].piece()) && !isWhiteTurn && finalLine > initialLine)
 				return true;
 		}
 		return false;
@@ -256,7 +259,7 @@ public class DamasLogic {
 	boolean isPossibleToMove() {
 		for(int l = 0; l < length ; l ++) {
 			for(int c = 0; c<length; c++) {
-				if(pos[l * length + c].piece() == "white" && isWhiteTurn || pos[l * length + c].piece() == "black" && !isWhiteTurn) {
+				if(("white").equals(pos[l * length + c].piece()) && isWhiteTurn || ("black").equals(pos[l * length + c].piece()) && !isWhiteTurn) {
 					int[][] playableDirections = {{1,1},{1,-1},{-1,1},{-1,-1}};
 					for(int i = 0; i<playableDirections.length; i++) {
 						int finalLine = l + playableDirections[i][0];
@@ -273,7 +276,7 @@ public class DamasLogic {
 	boolean captureAvailable() {
 		for(int l = 0; l < length ; l ++) {
 			for(int c = 0; c<length; c++) {
-				if(pos[l * length + c].piece() == "white" && isWhiteTurn || pos[l * length + c].piece() == "black" && !isWhiteTurn) {
+				if(("white").equals(pos[l * length + c].piece()) && isWhiteTurn || ("black").equals(pos[l * length + c].piece()) && !isWhiteTurn) {
 					int[][] captureDirections = {{2,2},{2,-2},{-2,2},{-2,-2}};
 					for(int i = 0; i<captureDirections.length; i++) {
 						int finalLine = l + captureDirections[i][0];
@@ -328,7 +331,7 @@ public class DamasLogic {
 	}
 	void saveGame(String saveName) {
 		try {
-			PrintWriter writter = new PrintWriter(new File("SaveGame.txt"));
+			PrintWriter writter = new PrintWriter(new FileWriter("SaveGame.txt", true));
 			writter.println(saveName);
 			writter.println(length);
 			for(int i = 0; i<length;i++) {
@@ -337,12 +340,16 @@ public class DamasLogic {
 					writter.println();
 				}
 			}
+			writter.println(isWhiteTurn);
 			writter.close();
 			
 		}
 		catch(FileNotFoundException e){
 			System.err.println("Erro a escrever no ficheiro");
 		}
+		catch(IOException e) {
+	        System.err.println("Erro ao abrir o ficheiro para append");
+	    }
 	}
 }
 		

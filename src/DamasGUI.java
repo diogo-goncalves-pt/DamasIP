@@ -43,7 +43,7 @@ public class DamasGUI {
 	Color background(int line, int col) {
 		if(logic.validPlay(initialLine, initialCol, line, col))
 			return StandardColor.NAVY;
-		if((line == initialLine && col == initialCol) && (logic.getPos()[line*logic.getLength() + col].piece() != null)) 
+		if((line == initialLine && col == initialCol) && (!"null".equals(logic.getPos()[line*logic.getLength() + col].piece()))) 
 			return StandardColor.MAROON;
 		return (line % 2 == 0) ? (col % 2 != 0 ? StandardColor.GRAY : StandardColor.WHITE)
                 : (col % 2 == 0 ? StandardColor.GRAY : StandardColor.WHITE);
@@ -62,7 +62,6 @@ public class DamasGUI {
 	
 	void click(int line, int col) {
 		int index = line * logic.getLength() + col;
-		System.out.println(logic.getPos()[index].piece());
 		if(logic.win()) {
 			if(logic.getWhiteWin())
 				board.showMessage("As brancas ganharam!");
@@ -93,7 +92,7 @@ public class DamasGUI {
 					initialCol = -1;
 				}
 			}
-			else if(count == 0 && ((logic.getWturn() && logic.getPos()[index].piece() == "white" && line != 0)||(!logic.getWturn() && logic.getPos()[index].piece() == "black" && line != logic.getLength()-1))) {
+			else if(count == 0 && ((logic.getWturn() && ("white").equals(logic.getPos()[index].piece()) && line != 0)||(!logic.getWturn() && ("black").equals(logic.getPos()[index].piece()) && line != logic.getLength()-1))) {
 					initialLine = line;
 					initialCol = col;
 					count = 1;
@@ -132,6 +131,7 @@ public class DamasGUI {
 	}
 	void load() {
 		int length = 0;
+		boolean whiteturn = false;
 		String saveGame = board.promptText("Nome do ficheiro: ");
 		try {
 			Scanner scanner = new Scanner(new File("SaveGame.txt"));
@@ -141,11 +141,12 @@ public class DamasGUI {
 					for(int i = 0; i<length*length; i ++) {
 						logic.setPos(new Position(scanner.nextInt(), scanner.nextInt()),i);
 						String piece = scanner.next();
-						if(piece == "null")
-							logic.getPos()[i].setPiece("null");
+						if(piece.equals("null"))
+							logic.getPos()[i].setPiece(null);
 						else 
 							logic.getPos()[i].setPiece(piece);
 					}
+					whiteturn = scanner.nextBoolean();
 					break;
 				}
 			}
@@ -155,7 +156,7 @@ public class DamasGUI {
 		catch(FileNotFoundException e){
 			System.err.println("Erro a carregar o jogo");
 		}
-		DamasLogic newLogic = new DamasLogic(logic.getPos());
+		DamasLogic newLogic = new DamasLogic(logic.getPos(), whiteturn);
 		DamasGUI gui = new DamasGUI(newLogic, length);
 		gui.start();
 		
