@@ -238,7 +238,7 @@ public class DamasLogic {
 				randomPiece = oneColorPiece[(int)(Math.random()*oneColorPiece.length)];
 				if(numberOfTrys == 100) {
 					Error1 = true;
-				}
+				} 
 				numberOfTrys ++;
 			}
 		}

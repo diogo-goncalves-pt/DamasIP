@@ -128,23 +128,28 @@ public class DamasGUI {
 		String saveGame = board.promptText("Nome do ficheiro: ");
 		assert(saveGame != null);
 		logic.saveGame(saveGame);
+		board.showMessage("Jogo gravado com sucesso!");
 	}
 	void load() {
 		int length = 0;
 		boolean whiteturn = false;
+		boolean findGame = false;
+		Position[] newPos = null;
 		String saveGame = board.promptText("Nome do ficheiro: ");
 		try {
 			Scanner scanner = new Scanner(new File("SaveGame.txt"));
 			while(scanner.hasNext()) {
 				if(scanner.next().equals(saveGame)) {
+					findGame = true;
 					length = scanner.nextInt();
+					newPos = new Position[length * length];
 					for(int i = 0; i<length*length; i ++) {
-						logic.setPos(new Position(scanner.nextInt(), scanner.nextInt()),i);
+						newPos[i] = (new Position(scanner.nextInt(), scanner.nextInt()));
 						String piece = scanner.next();
 						if(piece.equals("null"))
-							logic.getPos()[i].setPiece(null);
+							newPos[i].setPiece(null);
 						else 
-							logic.getPos()[i].setPiece(piece);
+							newPos[i].setPiece(piece);
 					}
 					whiteturn = scanner.nextBoolean();
 					break;
@@ -156,10 +161,13 @@ public class DamasGUI {
 		catch(FileNotFoundException e){
 			System.err.println("Erro a carregar o jogo");
 		}
-		DamasLogic newLogic = new DamasLogic(logic.getPos(), whiteturn);
-		DamasGUI gui = new DamasGUI(newLogic, length);
-		gui.start();
-		
+		if(findGame) {
+			DamasLogic newLogic = new DamasLogic(newPos, whiteturn);
+			DamasGUI newgui = new DamasGUI(newLogic, length);
+			newgui.start();	
+		}
+		else
+			board.showMessage("jogo não encontrado!");
 		
 	}
 
