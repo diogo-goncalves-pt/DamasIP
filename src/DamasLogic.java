@@ -118,15 +118,10 @@ public class DamasLogic {
 	}
 	
 	boolean isDraw() {
-		int countUnplayableWhite = 0;
-		int countUnplayableBlack = 0;
-		for(int i =0; i<pos.length; i++) {
-			if(pos[i].getPlayable() == false && ("white").equals(pos[i].piece()))
-				countUnplayableWhite++;
-			if(pos[i].getPlayable() == false && ("black").equals(pos[i].piece()))
-				countUnplayableBlack++;
+		if(!isPossibleToMove() && numberOfBlack == numberOfWhite) {
+			return true;
 		}
-		return((countUnplayableBlack == countUnplayableWhite) && (countUnplayableBlack == numberOfBlack && countUnplayableWhite == numberOfWhite));
+		return false;
 	}
 	
 	boolean validPlay(int initialLine,int initialCol, int finalLine, int finalCol){

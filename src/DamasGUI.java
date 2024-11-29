@@ -4,7 +4,6 @@ import pt.iscte.guitoo.board.Board;
 import java.util.Scanner;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 
 public class DamasGUI {
 	Board board;
@@ -15,7 +14,7 @@ public class DamasGUI {
 	
 
 	DamasGUI() {
-		this.logic = new DamasLogic(6,3);
+		this.logic = new DamasLogic();
 		this.logic.posFill();
 		this.logic.firstPlace();
 		board = new Board("As Brancas jogam   " + logic.getNumberOfWStones() + "B | " + logic.getNumberOfBStones() + "P", logic.getLength(), logic.getLength(), 80);
