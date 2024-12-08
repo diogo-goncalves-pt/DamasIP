@@ -118,7 +118,7 @@ public class DamasLogic {
 	}
 	
 	boolean isDraw() {
-		if(!isPossibleToMove() && numberOfBlack == numberOfWhite) {
+		if((!isPossibleToMove() || isBlocked()) && numberOfBlack == numberOfWhite) {
 			return true;
 		}
 		return false;
@@ -251,6 +251,21 @@ public class DamasLogic {
 		}
 		return false;
 	}
+	boolean isBlocked() {
+		int count = 0;
+		for(int l = 0; l < length ; l ++) {
+			for(int c = 0; c<length; c++) {
+				if(("white").equals(pos[l * length + c].piece())) {
+					count ++;
+					if(count == numberOfWhite)
+						return true;
+				}
+				else if(("black").equals(pos[l * length + c].piece()))
+					return false;
+			}
+		}
+		return false;
+	}
 	boolean isPossibleToMove() {
 		for(int l = 0; l < length ; l ++) {
 			for(int c = 0; c<length; c++) {
@@ -268,6 +283,7 @@ public class DamasLogic {
 		return false;
 	}
 	
+	
 	boolean captureAvailable() {
 		for(int l = 0; l < length ; l ++) {
 			for(int c = 0; c<length; c++) {
@@ -284,7 +300,7 @@ public class DamasLogic {
 		}
 		return false;
 	}
-	void capture(int initialLine, int initialCol,int finalLine,int finalCol) { //line e col sao locais onde a peca vai
+	void capture(int initialLine, int initialCol,int finalLine,int finalCol) { 
 		int middlePieceLine = (initialLine + finalLine)/2;
 		int middlePieceCol = (initialCol + finalCol)/2;
 		
@@ -312,7 +328,7 @@ public class DamasLogic {
 			whiteWin = false;
 			return true;
 		}
-		if(!isPossibleToMove() && !isDraw()) {
+		if((!isPossibleToMove() || isBlocked()) && !isDraw()) {
 			if(numberOfWhite>numberOfBlack) {
 				whiteWin = true;
 				return true;

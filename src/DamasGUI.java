@@ -125,9 +125,12 @@ public class DamasGUI {
 	}
 	void save() {
 		String saveGame = board.promptText("Nome do ficheiro: ");
-		assert(saveGame != null);
-		logic.saveGame(saveGame);
-		board.showMessage("Jogo gravado com sucesso!");
+		if(!("").equals(saveGame) && saveGame != null) {
+			logic.saveGame(saveGame);
+			board.showMessage("Jogo gravado com sucesso!");
+		}
+		else
+			board.showMessage("Nome Inválido");
 	}
 	void load() {
 		int length = 0;
